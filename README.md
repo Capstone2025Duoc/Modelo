@@ -1,6 +1,6 @@
 # Modelo Predictivo de Riesgo de Repitencia - CRISP-DM
 
-Este proyecto implementa un modelo predictivo para clasificar el riesgo de repitencia de estudiantes chilenos basado en el avance de sus notas, este modelo fue entrenado con los datos de los alumnos egresados de la enseñanza media en el año 2024, estos datos abiertos que Mineduc sube año a año, sin embargo en dichos csv solo existen los promedios de los estudiantes, no sus notas como tal, es por este motivo que las notas de los estudiantes han sido simuladas a partir de los promedios existentes.
+Este proyecto implementa un modelo predictivo para clasificar el riesgo de repitencia de estudiantes chilenos basado en el avance de sus notas, este modelo fue entrenado con los datos de los alumnos egresados de la enseñanza media en el año 2024, estos son datos abiertos que Mineduc sube año a año, sin embargo en dichos csv solo existen los promedios de los estudiantes, no sus notas como tal, es por este motivo que las notas de los estudiantes han sido simuladas a partir de los promedios existentes.
 
 ## Estructura del Proyecto
 ```

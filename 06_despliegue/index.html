@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicción de Riesgo de Repitencia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result.bajo {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .result.medio {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+
+        .result.alto {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .result-promedio {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .result-details {
+            margin-top: 15px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            font-weight: 600;
+        }
+
+        .result-value {
+            color: #555;
+        }
+
+        .probabilidades {
+            margin-top: 15px;
+        }
+
+        .prob-bar {
+            height: 25px;
+            background: #e0e0e0;
+            border-radius: 12px;
+            margin: 8px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .prob-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .prob-fill.alto {
+            background: #dc3545;
+        }
+
+        .prob-fill.medio {
+            background: #ffc107;
+        }
+
+        .prob-fill.bajo {
+            background: #28a745;
+        }
+
+        .error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Predicción de Riesgo de Repitencia</h1>
+        <p class="subtitle">Ingresa hasta 3 notas parciales para evaluar el riesgo</p>
+
+        <form id="predictionForm">
+            <div class="form-group">
+                <label for="nota1">Nota 1 *</label>
+                <input type="number" id="nota1" name="nota1" min="1.0" max="7.0" step="0.1" required>
+                <span class="help-text">Rango: 1.0 - 7.0</span>
+            </div>
+
+            <div class="form-group">
+                <label for="nota2">Nota 2 (opcional)</label>
+                <input type="number" id="nota2" name="nota2" min="1.0" max="7.0" step="0.1">
+                <span class="help-text">Deja vacío si no tienes esta nota aún</span>
+            </div>
+
+            <div class="form-group">
+                <label for="nota3">Nota 3 (opcional)</label>
+                <input type="number" id="nota3" name="nota3" min="1.0" max="7.0" step="0.1">
+                <span class="help-text">Deja vacío si no tienes esta nota aún</span>
+            </div>
+
+            <button type="submit" id="submitBtn">Predecir Riesgo</button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Calculando riesgo de repitencia...</p>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="result" id="result">
+            <div class="result-header">
+                <span class="result-title" id="resultTitle">Riesgo: <span id="riesgoText"></span></span>
+                <span class="result-promedio">Promedio: <span id="promedioText"></span></span>
+            </div>
+
+            <div class="result-details">
+                <div class="result-item">
+                    <span class="result-label">Cantidad de notas:</span>
+                    <span class="result-value" id="cantidadNotas"></span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Tendencia:</span>
+                    <span class="result-value" id="tendencia"></span>
+                </div>
+            </div>
+
+            <div class="probabilidades">
+                <h3 style="margin-bottom: 15px; font-size: 16px;">Probabilidades:</h3>
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Alto Riesgo</span>
+                        <span id="probAlto">0%</span>
+                    </div>
+                    <div class="prob-bar">
+                        <div class="prob-fill alto" id="barAlto" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Medio Riesgo</span>
+                        <span id="probMedio">0%</span>
+                    </div>
+                    <div class="prob-bar">
+                        <div class="prob-fill medio" id="barMedio" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Bajo Riesgo</span>
+                        <span id="probBajo">0%</span>
+                    </div>
+                    <div class="prob-bar">
+                        <div class="prob-fill bajo" id="barBajo" style="width: 0%">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('predictionForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const result = document.getElementById('result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Ocultar resultados anteriores
+            result.classList.remove('show', 'alto', 'medio', 'bajo');
+            error.classList.remove('show');
+            loading.classList.add('show');
+            submitBtn.disabled = true;
+
+            // Recopilar notas
+            const notas = [];
+            const nota1 = parseFloat(document.getElementById('nota1').value);
+            if (nota1) notas.push(nota1);
+
+            const nota2 = parseFloat(document.getElementById('nota2').value);
+            if (nota2) notas.push(nota2);
+
+            const nota3 = parseFloat(document.getElementById('nota3').value);
+            if (nota3) notas.push(nota3);
+
+            // Validar que haya al menos una nota
+            if (notas.length === 0) {
+                showError('Debes ingresar al menos una nota');
+                return;
+            }
+
+            // Validar rango de notas
+            for (let nota of notas) {
+                if (nota < 1.0 || nota > 7.0) {
+                    showError('Las notas deben estar entre 1.0 y 7.0');
+                    return;
+                }
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ notas: notas })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Error al procesar la solicitud');
+                }
+
+                // Mostrar resultados
+                displayResults(data);
+
+            } catch (err) {
+                showError(err.message || 'Error al conectar con el servidor. Asegúrate de que la API esté corriendo.');
+            } finally {
+                loading.classList.remove('show');
+                submitBtn.disabled = false;
+            }
+        });
+
+        function displayResults(data) {
+            // Actualizar texto de riesgo
+            document.getElementById('riesgoText').textContent = data.riesgo.toUpperCase();
+            document.getElementById('promedioText').textContent = data.promedio.toFixed(2);
+            document.getElementById('cantidadNotas').textContent = data.cantidad_notas;
+            document.getElementById('tendencia').textContent = data.tendencia;
+
+            // Actualizar probabilidades
+            const probAlto = (data.probabilidades.alto * 100).toFixed(1);
+            const probMedio = (data.probabilidades.medio * 100).toFixed(1);
+            const probBajo = (data.probabilidades.bajo * 100).toFixed(1);
+
+            document.getElementById('probAlto').textContent = probAlto + '%';
+            document.getElementById('probMedio').textContent = probMedio + '%';
+            document.getElementById('probBajo').textContent = probBajo + '%';
+
+            document.getElementById('barAlto').style.width = probAlto + '%';
+            document.getElementById('barAlto').textContent = probAlto + '%';
+            document.getElementById('barMedio').style.width = probMedio + '%';
+            document.getElementById('barMedio').textContent = probMedio + '%';
+            document.getElementById('barBajo').style.width = probBajo + '%';
+            document.getElementById('barBajo').textContent = probBajo + '%';
+
+            // Aplicar clase de riesgo
+            result.classList.add('show', data.riesgo);
+        }
+
+        function showError(message) {
+            error.textContent = message;
+            error.classList.add('show');
+        }
+    </script>
+</body>
+</html>
+
+
+

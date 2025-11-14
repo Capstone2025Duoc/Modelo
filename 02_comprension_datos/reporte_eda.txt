@@ -1,0 +1,35 @@
+======================================================================
+REPORTE DE ANÁLISIS EXPLORATORIO DE DATOS
+======================================================================
+
+Fecha: 2025-11-14 04:45:14
+
+Total de registros: 274,669
+Total de columnas: 21
+
+Valores nulos en PROM_NOTAS_ALU: 0
+
+Rango de promedios: 0.00 - 7.00
+Promedio general: 5.97
+Mediana: 6.10
+Desviación estándar: 0.72
+
+Distribución por umbral de aprobación:
+  - Promedio < 4.0: 1,030 (0.37%)
+  - Promedio >= 4.0: 273,639 (99.63%)
+
+Distribución por egreso:
+  - Egresados (1): 264,947 (96.46%)
+  - No egresados (0): 9,722 (3.54%)
+
+Años en el dataset: 2024 - 2024
+Años únicos: 1
+
+======================================================================
+CONCLUSIONES
+======================================================================
+1. El dataset contiene información histórica de promedios de estudiantes
+2. El umbral de aprobación es 4.0
+3. El dataset tiene un desbalance excesivo entre alumnos repitentes y egresados lo que puede afectar en gran medida el entrenamiento de los modelos y su desempeño.
+4. Se puede crear una variable objetivo basada en el promedio
+5. El modelo debe considerar la evolución de las notas

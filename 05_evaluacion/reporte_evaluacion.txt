@@ -1,0 +1,21 @@
+======================================================================
+REPORTE FINAL DE EVALUACIÓN
+======================================================================
+
+Fecha: 2025-11-14 10:45:39
+
+MÉTRICAS DE RENDIMIENTO:
+  Accuracy:  1.0000
+  Precision: 1.0000
+  Recall:    1.0000
+  F1-Score:  1.0000
+
+======================================================================
+CONCLUSIONES
+======================================================================
+OK El modelo cumple con el objetivo de precision (>80%)
+
+El modelo está listo para el despliegue si:
+  1. Accuracy >= 0.80
+  2. Las métricas por clase son balanceadas
+  3. La matriz de confusión muestra buen rendimiento
